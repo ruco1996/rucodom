@@ -1,6 +1,6 @@
 /** @jsx rucodom */
-import { rucodom } from "./helpers/rucodom.js";
-import Title from "./components/Title.js";
+import { rucodom } from "./helpers/rucodom";
+import Title from "./components/Title";
 
 const App = (props) => {
   const { children, className } = props;
