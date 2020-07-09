@@ -1,2 +1,2 @@
 # rucodom
-Custom Virtual DOM
+Custom Virtual DOM for learning purposes.
