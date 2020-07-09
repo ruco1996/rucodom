@@ -1,9 +1,7 @@
-/** @jsx daniDom */
+/** @jsx danidom */
 import "./styles.css";
 
-const root = document.getElementById("root");
-
-function daniDom(type, props, ...children) {
+function danidom(type, props, ...children) {
   return {
     type,
     props,
@@ -11,30 +9,48 @@ function daniDom(type, props, ...children) {
   };
 }
 
-const Title = (
+const Title = ({ value }) => (
   <h1 class="title" style="font-size: 50px;" data-test="hello">
-    dsdasda
+    {value}
   </h1>
 );
 
-const MyComponent = (
-  <div>
-    <h1 class="title" style="font-size: 50px;" data-test="hello">
-      hello world
-    </h1>
-  </div>
+const MyComponent = () => (
+  <article id="my-article">
+    <div class="header" data-header="yo">
+      <Title value="dani" />
+    </div>
+  </article>
+);
+
+const Test = ({ value }) => (
+  <article id="my-article">
+    <div class="header" data-header="yo">
+      <Title value={value} />
+    </div>
+  </article>
 );
 
 function render(node) {
-  console.log(node);
-  var element;
-  if (typeof node.type == "string") {
-    element = document.createElement(node.type);
-    console.log(element);
+  if (typeof node === "string") {
+    return document.createTextNode(node);
   }
-  if (typeof node.type == "object") {
+
+  if (typeof node.type === "object") {
     return render(node.type);
   }
+
+  if (typeof node.type === "function") {
+    let props = {
+      children: node.children[0],
+    };
+    if (node.props) {
+      props = Object.assign({}, node.props, props);
+    }
+    return render(node.type(props));
+  }
+
+  const element = document.createElement(node.type);
 
   if (node.props) {
     Object.keys(node.props).forEach((key) => {
@@ -44,13 +60,25 @@ function render(node) {
     });
   }
 
-  let text = document.createTextNode(node.children[0]);
-  element.appendChild(text);
+  let childrens = node.children.map((children) => render(children));
+  childrens.forEach((c) => element.appendChild(c));
+
   return element;
 }
 
-// root.appendChild(render(<MyComponent hello="pim"></MyComponent>));
+const App = (props) => {
+  const { children, className } = props;
+  return (
+    <ul class={`${className}`}>
+      <li>Hello</li>
+      <li>Bye</li>
+      <li>{children}</li>
+      <MyComponent author="daniel" />
+      <Test value="daniel" />
+    </ul>
+  );
+};
 
-root.appendChild(render(<Title />));
-
-// root.appendChild(render(title));
+document
+  .getElementById("root")
+  .appendChild(render(<App className="myList">See You</App>));
